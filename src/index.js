@@ -4,23 +4,6 @@ import './index.css';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// class Square extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       value: null,
-//     };
-//   }
-//   render() {
-//     return (
-//       <button className="square"
-//        onClick={() => this.props.onClick()}>
-//       {this.props.value}
-//       </button>
-//     );
-//   }
-// }
-
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>
@@ -51,8 +34,12 @@ class Board extends React.Component {
   }
 
   renderSquare(i) {
-    return <Square value={this.state.squares[i]} 
-    onClick={() => this.handleClick(i) }/>;
+    return (
+      <Square 
+        value={this.state.squares[i]} 
+        onClick={() => this.handleClick(i) }
+      />
+    );
   }
 
   render() {
@@ -68,7 +55,6 @@ class Board extends React.Component {
 
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -90,14 +76,39 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+    };
+  }
+
+  render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+    let status;
+    if(winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+  }
+
   render() {
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{status}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
@@ -124,6 +135,34 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+history = [
+  // Before first move
+  {
+    squares: [
+      null, null, null,
+      null, null, null,
+      null, null, null,
+    ]
+  },
+  // After first move
+  {
+    squares: [
+      null, null, null,
+      null, 'X', null,
+      null, null, null,
+    ]
+  },
+  // After second move
+  {
+    squares: [
+      null, null, null,
+      null, 'X', null,
+      null, null, 'O',
+    ]
+  },
+  // ...
+]
 
 ReactDOM.render(
   <Game />,
